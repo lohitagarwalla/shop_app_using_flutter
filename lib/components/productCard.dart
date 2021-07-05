@@ -39,7 +39,7 @@ class ProductCard extends StatelessWidget {
             flex: 2,
             child: Image.network(
               imageUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
           Expanded(

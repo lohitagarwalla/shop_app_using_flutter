@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
 
 class DrawerWidget extends StatelessWidget {
-  const DrawerWidget({
-    Key? key,
-  }) : super(key: key);
+  DrawerWidget({required this.category});
+  final List<String> category;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
+      child: ListView.builder(
         padding: const EdgeInsets.all(8),
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.close),
-            title: Text('Close'),
+        itemCount: category.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          return new ListTile(
+            title: Text(category[index]),
             onTap: () {
               Navigator.of(context).pop();
+              print('ListTile is pressed');
             },
-          ),
-          ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text('Profile'),
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

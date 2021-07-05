@@ -21,6 +21,8 @@ class ItemInfoText extends StatelessWidget {
           TextSpan(text: value, style: TextStyle()),
         ],
       ),
+      maxLines: 5,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
