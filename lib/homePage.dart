@@ -3,6 +3,7 @@ import 'components/DrawerWidget.dart';
 import 'components/productCard.dart';
 import 'components/product.dart';
 import 'components/bottomButton.dart';
+import 'mySearch.dart';
 
 List<Product> products = [
   Product(
@@ -27,8 +28,39 @@ List<Product> products = [
       category: 'laptop'),
 ];
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<String> kWords;
+  SearchAppBarDelegate _searchDelegate = SearchAppBarDelegate([], []);
+
+  //Initializing with sorted list of english words
+  _HomePageState()
+      : kWords = [
+          'hello',
+          'dear',
+          'friend',
+          'how',
+          'are',
+          'you',
+          'lets',
+          'meet',
+          'soon'
+        ]..sort(
+            (w1, w2) => w1.toLowerCase().compareTo(w2.toLowerCase()),
+          ),
+        super();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchDelegate = SearchAppBarDelegate(kWords, []);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +68,12 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       drawer: DrawerWidget(category: category),
       appBar: AppBar(
-        actions: [
+        actions: <Widget>[
           IconButton(
-            onPressed: () {
-              print('search icon pressed');
+            onPressed: () async {
+              String? x =
+                  await showSearch(context: context, delegate: _searchDelegate);
+              print(x);
             },
             icon: Icon(
               Icons.search,
