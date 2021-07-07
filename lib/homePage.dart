@@ -4,6 +4,8 @@ import 'components/productCard.dart';
 import 'components/product.dart';
 import 'components/bottomButton.dart';
 import 'mySearch.dart';
+import 'components/login_page.dart';
+import 'components/add_product.dart';
 
 List<Product> products = [
   Product(
@@ -37,6 +39,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<String> kWords;
+  var isLogged = true;
   SearchAppBarDelegate _searchDelegate = SearchAppBarDelegate([], []);
 
   //Initializing with sorted list of english words
@@ -68,7 +71,25 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       drawer: DrawerWidget(category: category),
       appBar: AppBar(
+        title: Row(
+          children: [
+            Icon(Icons.account_circle),
+            Text('my_app'),
+          ],
+        ),
         actions: <Widget>[
+          if (isLogged)
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddProductPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.add),
+            ),
           IconButton(
             onPressed: () async {
               String? x =
@@ -82,7 +103,9 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             onPressed: () {
-              print('Login icon pressed');
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
+              // print('Login icon pressed');
             },
             icon: Icon(
               Icons.person,
@@ -93,12 +116,6 @@ class _HomePageState extends State<HomePage> {
             width: 15,
           )
         ],
-        title: Row(
-          children: [
-            Icon(Icons.account_circle),
-            Text('my_app'),
-          ],
-        ),
       ),
       body: Column(
         children: [
