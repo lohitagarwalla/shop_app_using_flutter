@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ghs_app/components/wordSuggestionList.dart';
 // import 'package:english_words/english_words.dart' as words;
 
 // reference form: https://ptyagicodecamp.github.io/implementing-search-action-in-appbar.html
@@ -69,7 +70,7 @@ class SearchAppBarDelegate extends SearchDelegate<String> {
         ? _history
         : _words.where((word) => word.startsWith(query));
 
-    return _WordSuggestionList(
+    return WordSuggestionList(
       query: this.query,
       suggestions: suggestions.toList(),
       onSelected: (String suggestion) {
@@ -101,47 +102,5 @@ class SearchAppBarDelegate extends SearchDelegate<String> {
               },
             ),
     ];
-  }
-}
-
-// Suggestions list widget displayed in the search page.
-class _WordSuggestionList extends StatelessWidget {
-  const _WordSuggestionList(
-      {required this.suggestions,
-      required this.query,
-      required this.onSelected});
-
-  final List<String> suggestions;
-  final String query;
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme.subtitle1;
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (BuildContext context, int i) {
-        final String suggestion = suggestions[i];
-        return ListTile(
-          leading: query.isEmpty ? Icon(Icons.history) : Icon(null),
-          // Highlight the substring that matched the query.
-          title: RichText(
-            text: TextSpan(
-              text: suggestion.substring(0, query.length),
-              // style: textTheme.copyWith(fontWeight: FontWeight.bold),
-              children: <TextSpan>[
-                TextSpan(
-                  text: suggestion.substring(query.length),
-                  style: textTheme,
-                ),
-              ],
-            ),
-          ),
-          onTap: () {
-            onSelected(suggestion);
-          },
-        );
-      },
-    );
   }
 }
