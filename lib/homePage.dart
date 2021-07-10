@@ -74,6 +74,9 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           children: [
             Icon(Icons.account_circle),
+            SizedBox(
+              width: 10,
+            ),
             Text('my_app'),
           ],
         ),
@@ -84,7 +87,12 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddProductPage(),
+                    builder: (context) => AddProductPage(
+                      name: 'My name',
+                      description: 'This is description',
+                      price: '125',
+                      // category: 'New Category',
+                    ),
                   ),
                 );
               },
@@ -131,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                         itemNo: products[index].getitemNo(),
                         desctiption: products[index].getdescription(),
                         category: products[index].getcategory(),
+                        isEditable: isLogged,
                       );
               },
             ),

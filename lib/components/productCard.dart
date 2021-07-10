@@ -8,7 +8,8 @@ class ProductCard extends StatelessWidget {
       this.itemNo = 0,
       this.desctiption = '',
       this.price = 0,
-      this.category = ''});
+      this.category = '',
+      this.isEditable = false});
 
   final String imageUrl;
   final String productName;
@@ -16,6 +17,7 @@ class ProductCard extends StatelessWidget {
   final String desctiption;
   final int price;
   final String category;
+  final bool isEditable;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +73,11 @@ class ProductCard extends StatelessWidget {
                     property: 'Category',
                     value: category,
                   ),
+                  if (isEditable)
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text('edit'),
+                    ),
                 ],
               ),
             ),
