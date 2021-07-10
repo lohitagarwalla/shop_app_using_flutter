@@ -3,6 +3,7 @@ class Product {
   String name;
   int itemNo;
   String description;
+  int price;
   String category;
 
   Product(
@@ -10,6 +11,7 @@ class Product {
       this.name = '',
       this.itemNo = 0,
       this.description = '',
+      this.price = 0,
       this.category = ''});
 
   String getimageUrl() {
@@ -28,7 +30,11 @@ class Product {
     return description;
   }
 
-  String getcategory() {
+  int getprice() {
+    return price;
+  }
+
+  String getCategory() {
     return category;
   }
 }

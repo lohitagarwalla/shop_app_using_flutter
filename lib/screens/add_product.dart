@@ -1,30 +1,28 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:ghs_app/components/product.dart';
 import 'package:ghs_app/components/utility.dart';
 import 'package:ghs_app/components/viewChosenImage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddProductPage extends StatefulWidget {
-  final String? name;
-  final String? description;
-  final String? price;
-  final String? category;
+  final Product product;
 
-  AddProductPage(
-      {Key? key, this.name, this.description, this.price, this.category})
-      : super(key: key);
+  AddProductPage({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
 
   @override
   _AddProductPageState createState() => _AddProductPageState(
-      nameInit: this.name,
-      descriptionInit: this.description,
-      priceInit: this.price,
-      categoryInit: this.category);
+        product: this.product,
+      );
 }
 
 class _AddProductPageState extends State<AddProductPage> {
-  _AddProductPageState(
-      {this.nameInit, this.descriptionInit, this.priceInit, this.categoryInit});
+  _AddProductPageState({required this.product});
+
+  Product product;
 
   final _nameControl = TextEditingController();
   String? nameInit;
@@ -123,14 +121,11 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   void initState() {
     _nameControl.addListener(_nameControllPrint);
-    _nameControl.value =
-        TextEditingValue(text: nameInit == null ? '' : nameInit!);
+    _nameControl.value = TextEditingValue(text: product.getname());
     _descriptionControl.value =
-        TextEditingValue(text: descriptionInit == null ? '' : descriptionInit!);
-    _priceControl.value =
-        TextEditingValue(text: priceInit == null ? '' : priceInit!);
-    _categoryControl.value =
-        TextEditingValue(text: categoryInit == null ? '' : categoryInit!);
+        TextEditingValue(text: product.getdescription());
+    _priceControl.value = TextEditingValue(text: product.getprice().toString());
+    _categoryControl.value = TextEditingValue(text: product.getCategory());
     super.initState();
   }
 

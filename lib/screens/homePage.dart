@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'components/DrawerWidget.dart';
-import 'components/productCard.dart';
-import 'components/product.dart';
-import 'components/bottomButton.dart';
-import 'mySearch.dart';
-import 'components/login_page.dart';
-import 'components/add_product.dart';
+import '../components/DrawerWidget.dart';
+import '../components/productCard.dart';
+import '../components/product.dart';
+import '../components/bottomButton.dart';
+import '../components/mySearch.dart';
+import 'login_page.dart';
+import 'add_product.dart';
 
 List<Product> products = [
   Product(
@@ -21,6 +21,7 @@ List<Product> products = [
       name: 'HP Mouse',
       itemNo: 555,
       description: 'Computer mouse. USB connection. Good grip.',
+      price: 150,
       category: 'laptop'),
   Product(
       imageUrl: 'https://picsum.photos/250?image=9',
@@ -88,9 +89,7 @@ class _HomePageState extends State<HomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddProductPage(
-                      name: 'My name',
-                      description: 'This is description',
-                      price: '125',
+                      product: Product(),
                       // category: 'New Category',
                     ),
                   ),
@@ -134,11 +133,7 @@ class _HomePageState extends State<HomePage> {
                 return index == products.length
                     ? BottomButton()
                     : ProductCard(
-                        imageUrl: products[index].getimageUrl(),
-                        productName: products[index].getname(),
-                        itemNo: products[index].getitemNo(),
-                        desctiption: products[index].getdescription(),
-                        category: products[index].getcategory(),
+                        product: products[index],
                         isEditable: isLogged,
                       );
               },
