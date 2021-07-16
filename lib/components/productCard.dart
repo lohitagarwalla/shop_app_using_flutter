@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/product.dart';
+import 'package:ghs_app/components/utility.dart';
 import 'package:ghs_app/screens/add_product.dart';
 import 'textItemInfo.dart';
 
@@ -15,10 +16,10 @@ class ProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.blueAccent,
-          width: 1.7,
+          width: 0.5,
         ),
         color: Color.fromARGB(10, 10, 10, 10),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
       ),
       height: 300,
       margin: const EdgeInsets.all(10.0),
@@ -29,10 +30,13 @@ class ProductCard extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: Image.network(
-              product.getimageUrl(),
-              fit: BoxFit.contain,
-            ),
+            child: Image.memory(convertStringtoByteList(
+              product.getimageString(),
+            )),
+            // child: Image.network(
+            //   product.getimageString(),
+            //   fit: BoxFit.contain,
+            // ),
           ),
           Expanded(
             flex: 1,

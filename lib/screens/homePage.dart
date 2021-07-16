@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../components/DrawerWidget.dart';
 import '../components/productCard.dart';
@@ -6,30 +7,12 @@ import '../components/bottomButton.dart';
 import '../components/mySearch.dart';
 import 'login_page.dart';
 import 'add_product.dart';
+import 'package:http/http.dart' as http;
+import '../components/constants.dart';
 
-List<Product> products = [
-  Product(
-      imageUrl: 'https://picsum.photos/250?image=9',
-      name: 'Apple Laptop',
-      itemNo: 554,
-      description:
-          'Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap Steel water tap Description: Steel water tap Description: Steel water tap',
-      category: 'laptop'),
-  Product(
-      imageUrl:
-          'https://images.unsplash.com/photo-1625476255174-4db21bc943ea?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80',
-      name: 'HP Mouse',
-      itemNo: 555,
-      description: 'Computer mouse. USB connection. Good grip.',
-      price: 150,
-      category: 'laptop'),
-  Product(
-      imageUrl: 'https://picsum.photos/250?image=9',
-      name: 'Apple Laptop',
-      itemNo: 556,
-      description: 'Steel water tap',
-      category: 'laptop'),
-];
+const getProduct = endPoint + '/products/get';
+
+List<Product> products = [];
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -64,6 +47,25 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _searchDelegate = SearchAppBarDelegate(kWords, []);
+    updateProductsArray(getProduct);
+    print('home page init called');
+  }
+
+  updateProductsArray(String url) async {
+    var getUrl = Uri.parse(url);
+    http.Response response = await http.get(getUrl);
+    List productsarr = parseProduct(response.body);
+
+    setState(() {
+      products = productsarr as List<Product>;
+      print(productsarr);
+    });
+  }
+
+  List<Product> parseProduct(String responseBody) {
+    final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+    return parsed.map<Product>((json) => Product.fromJson(json)).toList();
   }
 
   @override
@@ -99,9 +101,10 @@ class _HomePageState extends State<HomePage> {
             ),
           IconButton(
             onPressed: () async {
-              String? x =
-                  await showSearch(context: context, delegate: _searchDelegate);
-              print(x);
+              updateProductsArray(getProduct);
+              // String? x =
+              //     await showSearch(context: context, delegate: _searchDelegate);
+              // print(x);
             },
             icon: Icon(
               Icons.search,

@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:ghs_app/components/constants.dart';
 import 'package:ghs_app/components/product.dart';
 import 'package:ghs_app/components/utility.dart';
 import 'package:ghs_app/components/viewChosenImage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class AddProductPage extends StatefulWidget {
   final Product product;
@@ -52,12 +55,26 @@ class _AddProductPageState extends State<AddProductPage> {
     } else {}
   }
 
+  Widget imageWidget = Container();
+
+  updateImageWidget() async {
+    var bytes = await File(imagePickedFile!.path).readAsBytes();
+    String imagestring = base64Encode(bytes);
+    var decodedBytes = base64Decode(imagestring);
+    print(imagestring);
+    setState(() {
+      imageWidget = Image.memory(decodedBytes);
+    });
+  }
+
   Widget _previewImages() {
     if (imagePickedFile != null) {
       return ViewChosenImage(
-        child: Image.file(
-          File(imagePickedFile!.path),
-        ),
+        child:
+            imageWidget, // Image.memory(await File(imagePickedFile!.path).readAsBytes()),
+        // child: Image.file(
+        //   File(imagePickedFile!.path),
+        // ),
       );
     } else {
       return ViewChosenImage(
@@ -111,7 +128,7 @@ class _AddProductPageState extends State<AddProductPage> {
         imagePickedFile = pickedFile;
       });
       imageString = await convertImageToString(File(pickedFile!.path));
-      print(imageString);
+      updateImageWidget();
     } catch (e) {
       print('Some error occured');
       setState(() {});
@@ -217,8 +234,17 @@ class _AddProductPageState extends State<AddProductPage> {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {
-                print(_nameControl.text);
+              onPressed: () async {
+                Product newproduct = Product(
+                  imageString: imageString ?? 'image string',
+                  name: _nameControl.text,
+                  itemNo: 251,
+                  description: _descriptionControl.text,
+                  price: int.parse(_priceControl.text),
+                  category: _categoryControl.text,
+                );
+                print(newproduct.getimageString());
+                createProduct(endPoint + '/products/create', newproduct);
               },
               child: Text('Save'),
             ),
@@ -230,4 +256,21 @@ class _AddProductPageState extends State<AddProductPage> {
       ),
     );
   }
+}
+
+Future<http.Response> createProduct(String url, Product newproduct) {
+  return http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, dynamic>{
+      "price": newproduct.getprice(),
+      "imageString": newproduct.getimageString(),
+      "name": newproduct.getname(),
+      "description": newproduct.getdescription(),
+      "category": newproduct.getCategory(),
+      "itemNo": newproduct.getitemNo(),
+    }),
+  );
 }
