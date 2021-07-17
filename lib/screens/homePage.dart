@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:ghs_app/components/network.dart';
 import '../components/DrawerWidget.dart';
 import '../components/productCard.dart';
 import '../components/product.dart';
@@ -48,18 +49,27 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _searchDelegate = SearchAppBarDelegate(kWords, []);
     updateProductsArray(getProduct);
-    print('home page init called');
   }
 
-  updateProductsArray(String url) async {
-    var getUrl = Uri.parse(url);
-    http.Response response = await http.get(getUrl);
-    List productsarr = parseProduct(response.body);
+  void updateProductsArray(String url) async {
+    if (url == '') return;
+    var returnValue = await getRequest(url);
+    List productsarr = [];
+    if (returnValue == null) {
+      Product errorProduct = Product();
+      errorProduct.name = 'some newtork error occured';
+      productsarr.add(errorProduct);
+      setState(() {
+        products = [errorProduct];
+      });
+    } else {
+      http.Response response = returnValue;
+      productsarr = parseProduct(response.body);
 
-    setState(() {
-      products = productsarr as List<Product>;
-      print(productsarr);
-    });
+      setState(() {
+        products = productsarr as List<Product>;
+      });
+    }
   }
 
   List<Product> parseProduct(String responseBody) {
@@ -91,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddProductPage(
-                      product: Product(),
+                      product: Product(), title: 'Add Product',
                       // category: 'New Category',
                     ),
                   ),
@@ -101,10 +111,13 @@ class _HomePageState extends State<HomePage> {
             ),
           IconButton(
             onPressed: () async {
-              updateProductsArray(getProduct);
-              // String? x =
-              //     await showSearch(context: context, delegate: _searchDelegate);
-              // print(x);
+              var searchquery =
+                  await showSearch(context: context, delegate: _searchDelegate);
+              if (searchquery != '') {
+                String searchUrl =
+                    endPoint + '/products/search/' + searchquery!;
+                updateProductsArray(searchUrl);
+              }
             },
             icon: Icon(
               Icons.search,
@@ -115,7 +128,6 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => LoginScreen()));
-              // print('Login icon pressed');
             },
             icon: Icon(
               Icons.person,

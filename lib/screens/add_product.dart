@@ -2,30 +2,29 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/constants.dart';
+import 'package:ghs_app/components/network.dart';
 import 'package:ghs_app/components/product.dart';
 import 'package:ghs_app/components/utility.dart';
 import 'package:ghs_app/components/viewChosenImage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 
 class AddProductPage extends StatefulWidget {
   final Product product;
+  final String title;
 
-  AddProductPage({
-    Key? key,
-    required this.product,
-  }) : super(key: key);
+  AddProductPage({Key? key, required this.product, required this.title})
+      : super(key: key);
 
   @override
-  _AddProductPageState createState() => _AddProductPageState(
-        product: this.product,
-      );
+  _AddProductPageState createState() =>
+      _AddProductPageState(product: this.product, title: this.title);
 }
 
 class _AddProductPageState extends State<AddProductPage> {
-  _AddProductPageState({required this.product});
+  _AddProductPageState({required this.product, required this.title});
 
   Product product;
+  String title;
 
   final _nameControl = TextEditingController();
   String? nameInit;
@@ -61,7 +60,6 @@ class _AddProductPageState extends State<AddProductPage> {
     var bytes = await File(imagePickedFile!.path).readAsBytes();
     String imagestring = base64Encode(bytes);
     var decodedBytes = base64Decode(imagestring);
-    print(imagestring);
     setState(() {
       imageWidget = Image.memory(decodedBytes);
     });
@@ -137,17 +135,12 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   void initState() {
-    _nameControl.addListener(_nameControllPrint);
     _nameControl.value = TextEditingValue(text: product.getname());
     _descriptionControl.value =
         TextEditingValue(text: product.getdescription());
     _priceControl.value = TextEditingValue(text: product.getprice().toString());
     _categoryControl.value = TextEditingValue(text: product.getCategory());
     super.initState();
-  }
-
-  void _nameControllPrint() {
-    print(_nameControl.text);
   }
 
   @override
@@ -163,7 +156,7 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Product'),
+        title: Text(title),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -243,7 +236,6 @@ class _AddProductPageState extends State<AddProductPage> {
                   price: int.parse(_priceControl.text),
                   category: _categoryControl.text,
                 );
-                print(newproduct.getimageString());
                 createProduct(endPoint + '/products/create', newproduct);
               },
               child: Text('Save'),
@@ -256,21 +248,4 @@ class _AddProductPageState extends State<AddProductPage> {
       ),
     );
   }
-}
-
-Future<http.Response> createProduct(String url, Product newproduct) {
-  return http.post(
-    Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, dynamic>{
-      "price": newproduct.getprice(),
-      "imageString": newproduct.getimageString(),
-      "name": newproduct.getname(),
-      "description": newproduct.getdescription(),
-      "category": newproduct.getCategory(),
-      "itemNo": newproduct.getitemNo(),
-    }),
-  );
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/wordSuggestionList.dart';
 // import 'package:english_words/english_words.dart' as words;
-
 // reference form: https://ptyagicodecamp.github.io/implementing-search-action-in-appbar.html
 
 //Search delegate
@@ -11,10 +10,7 @@ class SearchAppBarDelegate extends SearchDelegate<String> {
 
   SearchAppBarDelegate(List<String> words, List<String> history)
       : _words = words,
-        //pre-populated history of words
-        _history = history.length != 0
-            ? history
-            : <String>['apple', 'orange', 'banana', 'watermelon'],
+        _history = history,
         super();
 
   // Setting leading icon for the search bar.
@@ -37,45 +33,38 @@ class SearchAppBarDelegate extends SearchDelegate<String> {
   // Builds page to populate search results.
   @override
   Widget buildResults(BuildContext context) {
+    this._history.contains(this.query)
+        ? {
+            this._history.remove(this.query),
+            this._history.insert(0, this.query)
+          }
+        : this._history.insert(0, this.query);
+    this.close(context, this.query);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text('===Your Word Choice==='),
-            GestureDetector(
-              onTap: () {
-                //Define your action when clicking on result item.
-                //In this example, it simply closes the page
-                this.close(context, this.query);
-              },
-              child: Text(
-                this.query,
-                // style: Theme.of(context)
-                //     .textTheme
-                //     .copyWith(fontWeight: FontWeight.normal),
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: Container(),
     );
   }
 
   // Suggestions list while typing search query - this.query.
   @override
   Widget buildSuggestions(BuildContext context) {
+    List<String> allWords = [];
+    allWords.addAll(_words);
+    _words.forEach((element) {
+      _history.contains(element) ? {} : allWords.add(element);
+    });
     final Iterable<String> suggestions = this.query.isEmpty
         ? _history
-        : _words.where((word) => word.startsWith(query));
+        : allWords.where((word) => word.startsWith(query));
 
     return WordSuggestionList(
       query: this.query,
       suggestions: suggestions.toList(),
       onSelected: (String suggestion) {
         this.query = suggestion;
-        this._history.insert(0, suggestion);
+        // this._history.insert(0, suggestion);
         showResults(context);
       },
     );
@@ -85,22 +74,18 @@ class SearchAppBarDelegate extends SearchDelegate<String> {
   @override
   List<Widget> buildActions(BuildContext context) {
     return <Widget>[
-      query.isNotEmpty
-          ? IconButton(
-              tooltip: 'Clear',
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                query = '';
-                showSuggestions(context);
-              },
-            )
-          : IconButton(
-              icon: const Icon(Icons.mic),
-              tooltip: 'Voice input',
-              onPressed: () {
-                this.query = 'TBW: Get input from voice';
-              },
-            ),
+      if (query.isNotEmpty)
+        IconButton(
+          tooltip: 'Clear',
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+            showSuggestions(context);
+          },
+        )
     ];
   }
 }
+
+
+//TODO i have changed buildResult method from showResult to close()

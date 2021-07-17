@@ -24,7 +24,8 @@ class WordSuggestionList extends StatelessWidget {
           title: RichText(
             text: TextSpan(
               text: suggestion.substring(0, query.length),
-              // style: textTheme.copyWith(fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               children: <TextSpan>[
                 TextSpan(
                   text: suggestion.substring(query.length),

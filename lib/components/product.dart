@@ -39,7 +39,6 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Product(
       imageString: json['imageString'],
       name: json['name'] as String,
