@@ -27,20 +27,18 @@ class _AddProductPageState extends State<AddProductPage> {
   String title;
 
   final _nameControl = TextEditingController();
-  String? nameInit;
 
   final _descriptionControl = TextEditingController();
-  String? descriptionInit;
 
   final _priceControl = TextEditingController();
-  String? priceInit;
 
   final _categoryControl = TextEditingController();
-  String? categoryInit;
 
   final _picker = ImagePicker();
   PickedFile? imagePickedFile;
   String? imageString;
+
+  String? initialProductName;
 
   Future<void> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
@@ -66,6 +64,13 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   Widget _previewImages() {
+    if (product.getimageString() != '') {
+      try {
+        return ViewChosenImage(
+          child: convertStringtoImage(product.getimageString()),
+        );
+      } catch (e) {}
+    }
     if (imagePickedFile != null) {
       return ViewChosenImage(
         child:
@@ -135,6 +140,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   void initState() {
+    initialProductName = product.getname();
     _nameControl.value = TextEditingValue(text: product.getname());
     _descriptionControl.value =
         TextEditingValue(text: product.getdescription());
@@ -229,14 +235,26 @@ class _AddProductPageState extends State<AddProductPage> {
             ElevatedButton(
               onPressed: () async {
                 Product newproduct = Product(
-                  imageString: imageString ?? 'image string',
+                  imageString: imageString ?? '',
                   name: _nameControl.text,
-                  itemNo: 251,
+                  itemNo: 258, //TODO UPDATE ITEM NO LOGIC
                   description: _descriptionControl.text,
                   price: int.parse(_priceControl.text),
                   category: _categoryControl.text,
                 );
-                createProduct(endPoint + '/products/create', newproduct);
+                if (title.toLowerCase() == 'edit product') {
+                  //edit product case
+                  productCreateOrUpdateRequest(
+                      endPoint +
+                          '/products/update/' +
+                          product.getitemNo().toString(),
+                      newproduct,
+                      patchRequest);
+                } else {
+                  //create product case
+                  productCreateOrUpdateRequest(
+                      endPoint + '/products/create', newproduct, postRequest);
+                }
               },
               child: Text('Save'),
             ),

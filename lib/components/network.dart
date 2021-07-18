@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:ghs_app/components/product.dart';
 import 'package:http/http.dart' as http;
 
-Future<http.Response> createProduct(String url, Product newproduct) {
+Future<http.Response> productCreateOrUpdateRequest(
+    String url, Product newproduct, Function func) {
   var body = jsonEncode(<String, dynamic>{
     "price": newproduct.getprice(),
     "imageString": newproduct.getimageString(),
@@ -11,11 +12,21 @@ Future<http.Response> createProduct(String url, Product newproduct) {
     "category": newproduct.getCategory(),
     "itemNo": newproduct.getitemNo(),
   });
-  return postRequest(url, body);
+  return func(url, body);
 }
 
 Future<http.Response> postRequest(String url, String jsonString) {
   return http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonString,
+  );
+}
+
+Future<http.Response> patchRequest(String url, String jsonString) {
+  return http.patch(
     Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',

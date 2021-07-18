@@ -30,13 +30,7 @@ class ProductCard extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: Image.memory(convertStringtoByteList(
-              product.getimageString(),
-            )),
-            // child: Image.network(
-            //   product.getimageString(),
-            //   fit: BoxFit.contain,
-            // ),
+            child: convertStringtoImage(product.getimageString()),
           ),
           Expanded(
             flex: 1,
