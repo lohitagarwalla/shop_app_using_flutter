@@ -4,12 +4,18 @@ import 'package:ghs_app/components/utility.dart';
 import 'package:ghs_app/screens/add_product.dart';
 import 'textItemInfo.dart';
 
-class ProductCard extends StatelessWidget {
+// ignore: must_be_immutable
+class ProductCard extends StatefulWidget {
   ProductCard({required this.product, this.isEditable = false});
 
-  final bool isEditable;
-  final Product product;
+  bool isEditable;
+  Product product;
 
+  @override
+  _ProductCardState createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,7 +36,7 @@ class ProductCard extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: convertStringtoImage(product.getimageString()),
+            child: convertStringtoImage(widget.product.getimageString()),
           ),
           Expanded(
             flex: 1,
@@ -41,36 +47,39 @@ class ProductCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Text(
-                    product.getname(),
+                    widget.product.getname(),
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                   ItemInfoText(
                     property: 'Item No',
-                    value: product.getitemNo().toString(),
+                    value: widget.product.getitemNo().toString(),
                   ),
                   ItemInfoText(
                     property: 'Description',
-                    value: product.getdescription(),
+                    value: widget.product.getdescription(),
                   ),
                   ItemInfoText(
                     property: 'Price',
-                    value: product.getprice().toString(),
+                    value: widget.product.getprice().toString(),
                   ),
                   ItemInfoText(
                     property: 'Category',
-                    value: product.getCategory(),
+                    value: widget.product.getCategory(),
                   ),
-                  if (isEditable)
+                  if (widget.isEditable)
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        var returnProduct = await Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => AddProductPage(
-                                      product: product,
+                                      product: widget.product,
                                       title: 'Edit Product',
                                     )));
+                        setState(() {
+                          widget.product = returnProduct;
+                        });
                       },
                       child: Text('Edit'),
                     ),

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:ghs_app/components/product.dart';
 import 'package:http/http.dart' as http;
 
-Future<http.Response> productCreateOrUpdateRequest(
+Future<int> productCreateOrUpdateRequest(
     String url, Product newproduct, Function func) {
   var body = jsonEncode(<String, dynamic>{
     "price": newproduct.getprice(),
@@ -15,24 +15,26 @@ Future<http.Response> productCreateOrUpdateRequest(
   return func(url, body);
 }
 
-Future<http.Response> postRequest(String url, String jsonString) {
-  return http.post(
+Future<int> postRequest(String url, String jsonString) async {
+  http.Response response = await http.post(
     Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonString,
   );
+  return response.statusCode;
 }
 
-Future<http.Response> patchRequest(String url, String jsonString) {
-  return http.patch(
+Future<int> patchRequest(String url, String jsonString) async {
+  http.Response response = await http.patch(
     Uri.parse(url),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonString,
   );
+  return response.statusCode;
 }
 
 Future<dynamic> getRequest(String url) async {

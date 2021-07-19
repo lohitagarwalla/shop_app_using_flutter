@@ -96,8 +96,8 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           if (isLogged)
             IconButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                var returnProduct = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddProductPage(
@@ -106,6 +106,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 );
+                products.insert(0, returnProduct);
+                setState(() {
+                  products;
+                });
               },
               icon: Icon(Icons.add),
             ),

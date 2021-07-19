@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/constants.dart';
@@ -27,16 +26,12 @@ class _AddProductPageState extends State<AddProductPage> {
   String title;
 
   final _nameControl = TextEditingController();
-
   final _descriptionControl = TextEditingController();
-
   final _priceControl = TextEditingController();
-
   final _categoryControl = TextEditingController();
 
   final _picker = ImagePicker();
   PickedFile? imagePickedFile;
-  String? imageString;
 
   String? initialProductName;
 
@@ -56,10 +51,8 @@ class _AddProductPageState extends State<AddProductPage> {
 
   updateImageWidget() async {
     var bytes = await File(imagePickedFile!.path).readAsBytes();
-    String imagestring = base64Encode(bytes);
-    var decodedBytes = base64Decode(imagestring);
     setState(() {
-      imageWidget = Image.memory(decodedBytes);
+      imageWidget = Image.memory(bytes);
     });
   }
 
@@ -73,11 +66,7 @@ class _AddProductPageState extends State<AddProductPage> {
     }
     if (imagePickedFile != null) {
       return ViewChosenImage(
-        child:
-            imageWidget, // Image.memory(await File(imagePickedFile!.path).readAsBytes()),
-        // child: Image.file(
-        //   File(imagePickedFile!.path),
-        // ),
+        child: imageWidget,
       );
     } else {
       return ViewChosenImage(
@@ -126,15 +115,12 @@ class _AddProductPageState extends State<AddProductPage> {
   void _onImageButtonPressed(ImageSource source,
       {BuildContext? context}) async {
     try {
-      final pickedFile = await _picker.getImage(source: source);
-      setState(() {
-        imagePickedFile = pickedFile;
-      });
-      imageString = await convertImageToString(File(pickedFile!.path));
+      imagePickedFile = await _picker.getImage(source: source);
+      product.imageString =
+          await convertImageToString(File(imagePickedFile!.path));
       updateImageWidget();
     } catch (e) {
       print('Some error occured');
-      setState(() {});
     }
   }
 
@@ -235,16 +221,17 @@ class _AddProductPageState extends State<AddProductPage> {
             ElevatedButton(
               onPressed: () async {
                 Product newproduct = Product(
-                  imageString: imageString ?? '',
+                  imageString: product.imageString ?? '',
                   name: _nameControl.text,
                   itemNo: 258, //TODO UPDATE ITEM NO LOGIC
                   description: _descriptionControl.text,
                   price: int.parse(_priceControl.text),
                   category: _categoryControl.text,
                 );
+                int statusCode;
                 if (title.toLowerCase() == 'edit product') {
                   //edit product case
-                  productCreateOrUpdateRequest(
+                  statusCode = await productCreateOrUpdateRequest(
                       endPoint +
                           '/products/update/' +
                           product.getitemNo().toString(),
@@ -252,9 +239,15 @@ class _AddProductPageState extends State<AddProductPage> {
                       patchRequest);
                 } else {
                   //create product case
-                  productCreateOrUpdateRequest(
+                  statusCode = await productCreateOrUpdateRequest(
                       endPoint + '/products/create', newproduct, postRequest);
                 }
+                if (statusCode == 200) {
+                  ShowSnackBar(context, Text('Successfully saved.'));
+                } else {
+                  ShowSnackBar(context, Text('Network error. Could not save.'));
+                }
+                Navigator.pop(context, newproduct);
               },
               child: Text('Save'),
             ),
