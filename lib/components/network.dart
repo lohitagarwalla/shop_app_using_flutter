@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:ghs_app/components/product.dart';
+import 'package:ghs_app/classes/product.dart';
+import 'package:ghs_app/classes/user.dart';
 import 'package:http/http.dart' as http;
 
-Future<int> productCreateOrUpdateRequest(
+Future<http.Response> productCreateOrUpdateRequest(
     String url, Product newproduct, Function func) {
   var body = jsonEncode(<String, dynamic>{
     "price": newproduct.getprice(),
@@ -12,10 +13,19 @@ Future<int> productCreateOrUpdateRequest(
     "category": newproduct.getCategory(),
     "itemNo": newproduct.getitemNo(),
   });
-  return func(url, body);
+  return func(url, body); //func can be patchRequest of postRequest
 }
 
-Future<int> postRequest(String url, String jsonString) async {
+Future<http.Response> userCreateOrLoginRequest(String url, User user) {
+  var body = jsonEncode(<String, dynamic>{
+    "name": user.getname(),
+    "email": user.getemail(),
+    "pass": user.getPass()
+  });
+  return postRequest(url, body);
+}
+
+Future<http.Response> postRequest(String url, String jsonString) async {
   http.Response response = await http.post(
     Uri.parse(url),
     headers: <String, String>{
@@ -23,10 +33,10 @@ Future<int> postRequest(String url, String jsonString) async {
     },
     body: jsonString,
   );
-  return response.statusCode;
+  return response;
 }
 
-Future<int> patchRequest(String url, String jsonString) async {
+Future<http.Response> patchRequest(String url, String jsonString) async {
   http.Response response = await http.patch(
     Uri.parse(url),
     headers: <String, String>{
@@ -34,7 +44,7 @@ Future<int> patchRequest(String url, String jsonString) async {
     },
     body: jsonString,
   );
-  return response.statusCode;
+  return response;
 }
 
 Future<dynamic> getRequest(String url) async {

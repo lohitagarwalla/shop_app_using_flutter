@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/constants.dart';
 import 'package:ghs_app/components/network.dart';
-import 'package:ghs_app/components/product.dart';
-import 'package:ghs_app/components/utility.dart';
+import 'package:ghs_app/classes/product.dart';
+import 'package:ghs_app/components/productCard.dart';
+import 'package:ghs_app/utility-folder/utility.dart';
 import 'package:ghs_app/components/viewChosenImage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class AddProductPage extends StatefulWidget {
   final Product product;
@@ -51,7 +53,9 @@ class _AddProductPageState extends State<AddProductPage> {
 
   updateImageWidget() async {
     var bytes = await File(imagePickedFile!.path).readAsBytes();
+    var imagestring = await convertImageToString(File(imagePickedFile!.path));
     setState(() {
+      product.imageString = imagestring;
       imageWidget = Image.memory(bytes);
     });
   }
@@ -116,8 +120,6 @@ class _AddProductPageState extends State<AddProductPage> {
       {BuildContext? context}) async {
     try {
       imagePickedFile = await _picker.getImage(source: source);
-      product.imageString =
-          await convertImageToString(File(imagePickedFile!.path));
       updateImageWidget();
     } catch (e) {
       print('Some error occured');
@@ -154,6 +156,11 @@ class _AddProductPageState extends State<AddProductPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(
+              height: 20,
+            ),
+            ProductCard(
+                product: product), //TODO update product card with changes.
             SizedBox(
               height: 20,
             ),
@@ -231,16 +238,19 @@ class _AddProductPageState extends State<AddProductPage> {
                 int statusCode;
                 if (title.toLowerCase() == 'edit product') {
                   //edit product case
-                  statusCode = await productCreateOrUpdateRequest(
+                  http.Response response = await productCreateOrUpdateRequest(
                       endPoint +
                           '/products/update/' +
                           product.getitemNo().toString(),
                       newproduct,
                       patchRequest);
+                  statusCode = response.statusCode;
                 } else {
                   //create product case
-                  statusCode = await productCreateOrUpdateRequest(
+                  http.Response response = await productCreateOrUpdateRequest(
                       endPoint + '/products/create', newproduct, postRequest);
+
+                  statusCode = response.statusCode;
                 }
                 if (statusCode == 200) {
                   ShowSnackBar(context, Text('Successfully saved.'));

@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/network.dart';
+import 'package:ghs_app/utility-folder/shared-preferences-storage.dart';
 import '../components/DrawerWidget.dart';
 import '../components/productCard.dart';
-import '../components/product.dart';
+import '../classes/product.dart';
 import '../components/bottomButton.dart';
-import '../components/mySearch.dart';
+import '../classes/mySearch.dart';
 import 'login_page.dart';
 import 'add_product.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<String> kWords;
-  var isLogged = true;
+  var isLogged = false;
   SearchAppBarDelegate _searchDelegate = SearchAppBarDelegate([], []);
 
   //Initializing with sorted list of english words
@@ -129,9 +130,25 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           IconButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
+            onPressed: () async {
+              String token = await getToken();
+              if (token == no_token_found) {
+                isLogged = false;
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                            title: 'User Login', isLogged: isLogged)));
+              } else {
+                isLogged = true;
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                            title: 'User Login', isLogged: isLogged)));
+              }
             },
             icon: Icon(
               Icons.person,
@@ -146,7 +163,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
               itemCount: products.length + 1,
               itemBuilder: (BuildContext cntxt, int index) {
                 return index == products.length
@@ -155,6 +172,11 @@ class _HomePageState extends State<HomePage> {
                         product: products[index],
                         isEditable: isLogged,
                       );
+              },
+              separatorBuilder: (BuildContext cntxt, int index) {
+                return SizedBox(
+                  height: 1,
+                );
               },
             ),
           ),

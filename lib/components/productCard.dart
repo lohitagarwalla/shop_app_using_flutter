@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ghs_app/components/product.dart';
-import 'package:ghs_app/components/utility.dart';
+import 'package:ghs_app/classes/product.dart';
+import 'package:ghs_app/utility-folder/utility.dart';
 import 'package:ghs_app/screens/add_product.dart';
 import 'textItemInfo.dart';
 
@@ -19,27 +19,17 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.blueAccent,
-          width: 0.5,
-        ),
-        color: Color.fromARGB(10, 10, 10, 10),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      height: 300,
-      margin: const EdgeInsets.all(10.0),
+      height: 200,
       padding: EdgeInsets.all(10),
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Expanded(
-            flex: 2,
+            flex: 3,
             child: convertStringtoImage(widget.product.getimageString()),
           ),
           Expanded(
-            flex: 1,
+            flex: 6,
             child: Padding(
               padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
               child: Column(
