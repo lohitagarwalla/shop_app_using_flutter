@@ -60,3 +60,14 @@ Future<dynamic> getRequest(String url) async {
     return null;
   }
 }
+
+Future<http.Response> deleteRequest(String url) async {
+  final http.Response response = await http.delete(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+
+  return response;
+}

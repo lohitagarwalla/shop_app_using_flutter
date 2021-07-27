@@ -1,4 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:ghs_app/classes/category.dart';
+import 'dart:convert';
+
+void hello() {
+  Category hello1 = Category(name: 'hello1', subCategories: []);
+  Category hello2 = Category(name: 'hello2', subCategories: []);
+  Category hello3 = Category(name: 'hello3', subCategories: []);
+
+  hello1.subCategories!.add(hello2);
+  hello1.subCategories!.add(hello3);
+
+  var body = jsonEncode(hello1);
+  print(body);
+}
 
 class BottomButton extends StatelessWidget {
   const BottomButton({
@@ -7,33 +21,13 @@ class BottomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(),
-        ),
-        GestureDetector(
-          onTap: () {
-            print('Show more button pressed');
-          },
-          child: Container(
-            width: 150,
-            padding: EdgeInsets.fromLTRB(30, 15, 30, 15),
-            margin: EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-                color: Colors.blue, borderRadius: BorderRadius.circular(30)),
-            child: Center(
-              child: Text(
-                'Show More',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(),
-        ),
-      ],
+    return Center(
+      child: ElevatedButton(
+        child: Text('Show More'),
+        onPressed: () {
+          hello();
+        },
+      ),
     );
   }
 }

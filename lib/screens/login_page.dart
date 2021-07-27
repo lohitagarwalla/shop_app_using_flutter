@@ -113,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return;
                     } else if (res.statusCode == 200) {
                       ShowSnackBar(context, Text('Login successfull'));
+                      Navigator.pop(context, true);
                     } else {
                       ShowSnackBar(context, Text('Some Error occured'));
                       return;
@@ -131,6 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 100,
               thickness: 1,
             ),
+            Text('Dont have an account?'),
+            SizedBox(height: 10),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(

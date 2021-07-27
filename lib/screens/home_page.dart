@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/network.dart';
+import 'package:ghs_app/screens/profile_page.dart';
 import 'package:ghs_app/utility-folder/shared-preferences-storage.dart';
-import '../components/DrawerWidget.dart';
+import '../components/drawerWidget.dart';
 import '../components/productCard.dart';
 import '../classes/product.dart';
 import '../components/bottomButton.dart';
@@ -50,6 +51,20 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _searchDelegate = SearchAppBarDelegate(kWords, []);
     updateProductsArray(getProduct);
+    updateIsLogged();
+  }
+
+  updateIsLogged() async {
+    var token = await getToken();
+    if (token == no_token_found) {
+      setState(() {
+        isLogged = false;
+      });
+    } else {
+      setState(() {
+        isLogged = true;
+      });
+    }
   }
 
   void updateProductsArray(String url) async {
@@ -81,9 +96,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> category = ['Laptop', 'Mouse', 'Settings'];
     return Scaffold(
-      drawer: DrawerWidget(category: category),
+      drawer: DrawerWidget(context: context, title: 'My App'),
       appBar: AppBar(
         title: Row(
           children: [
@@ -133,21 +147,28 @@ class _HomePageState extends State<HomePage> {
             onPressed: () async {
               String token = await getToken();
               if (token == no_token_found) {
-                isLogged = false;
-
-                Navigator.push(
+                var result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => LoginScreen(
                             title: 'User Login', isLogged: isLogged)));
+                if (result) {
+                  setState(() {
+                    isLogged = true;
+                  });
+                }
+                print(result);
               } else {
-                isLogged = true;
-
-                Navigator.push(
+                var value = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => LoginScreen(
-                            title: 'User Login', isLogged: isLogged)));
+                        builder: (context) =>
+                            ProfileScreen(title: 'User Profile')));
+                if (value != null) {
+                  setState(() {
+                    isLogged = false;
+                  });
+                }
               }
             },
             icon: Icon(

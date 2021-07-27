@@ -68,7 +68,8 @@ class _ProductCardState extends State<ProductCard> {
                                       title: 'Edit Product',
                                     )));
                         setState(() {
-                          widget.product = returnProduct;
+                          if (returnProduct != null)
+                            widget.product = returnProduct;
                         });
                       },
                       child: Text('Edit'),

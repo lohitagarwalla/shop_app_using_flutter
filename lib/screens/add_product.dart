@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/constants.dart';
+import 'package:ghs_app/components/deleteAlertDialogu.dart';
 import 'package:ghs_app/components/network.dart';
 import 'package:ghs_app/classes/product.dart';
-import 'package:ghs_app/components/productCard.dart';
 import 'package:ghs_app/utility-folder/utility.dart';
 import 'package:ghs_app/components/viewChosenImage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -146,6 +146,11 @@ class _AddProductPageState extends State<AddProductPage> {
     super.dispose();
   }
 
+  void deleteProduct(String itemNo) async {
+    await deleteRequest(endPoint + '/products/delete/' + itemNo);
+    ShowSnackBar(context, Text('Product deleted successfully'));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,14 +161,7 @@ class _AddProductPageState extends State<AddProductPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-              height: 20,
-            ),
-            ProductCard(
-                product: product), //TODO update product card with changes.
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 _onImageButtonPressed(ImageSource.gallery, context: context);
@@ -171,6 +169,7 @@ class _AddProductPageState extends State<AddProductPage> {
               child: Text('Choose Image'),
             ),
             showImage(),
+            SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
@@ -181,9 +180,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     hintText: 'Enter name of the product'),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
@@ -195,9 +192,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     hintText: 'Enter Description of the product'),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
@@ -209,9 +204,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     hintText: 'Enter Price of the product'),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
@@ -222,9 +215,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     hintText: 'Enter Category of the product'),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 Product newproduct = Product(
@@ -261,6 +252,27 @@ class _AddProductPageState extends State<AddProductPage> {
               },
               child: Text('Save'),
             ),
+            SizedBox(
+              height: 12,
+            ),
+            if (title.toLowerCase() == 'edit product')
+              OutlinedButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.red)),
+                onPressed: () async {
+                  switch (await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return DeleteAlertDialog();
+                    },
+                  )) {
+                    case 'Yes':
+                      deleteProduct(product.getitemNo().toString());
+                      break;
+                  }
+                },
+                child: Text('Delete'),
+              ),
             SizedBox(
               height: 40,
             ),
