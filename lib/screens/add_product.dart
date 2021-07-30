@@ -4,10 +4,12 @@ import 'package:ghs_app/components/constants.dart';
 import 'package:ghs_app/components/deleteAlertDialogu.dart';
 import 'package:ghs_app/components/network.dart';
 import 'package:ghs_app/classes/product.dart';
+import 'package:ghs_app/utility-folder/dropDownList.dart';
 import 'package:ghs_app/utility-folder/utility.dart';
 import 'package:ghs_app/components/viewChosenImage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:loading_overlay/loading_overlay.dart';
 
 class AddProductPage extends StatefulWidget {
   final Product product;
@@ -36,6 +38,10 @@ class _AddProductPageState extends State<AddProductPage> {
   PickedFile? imagePickedFile;
 
   String? initialProductName;
+
+  String? dropDownValue;
+
+  bool isLoading = false;
 
   Future<void> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
@@ -133,7 +139,9 @@ class _AddProductPageState extends State<AddProductPage> {
     _descriptionControl.value =
         TextEditingValue(text: product.getdescription());
     _priceControl.value = TextEditingValue(text: product.getprice().toString());
-    _categoryControl.value = TextEditingValue(text: product.getCategory());
+    dropDownList.contains(product.getCategory())
+        ? dropDownValue = product.getCategory()
+        : dropDownValue = dropDownList[0];
     super.initState();
   }
 
@@ -146,9 +154,11 @@ class _AddProductPageState extends State<AddProductPage> {
     super.dispose();
   }
 
-  void deleteProduct(String itemNo) async {
-    await deleteRequest(endPoint + '/products/delete/' + itemNo);
+  Future<http.Response> deleteProduct(String itemNo) async {
+    http.Response res =
+        await deleteRequest(endPoint + '/products/delete/' + itemNo);
     ShowSnackBar(context, Text('Product deleted successfully'));
+    return res;
   }
 
   @override
@@ -157,126 +167,155 @@ class _AddProductPageState extends State<AddProductPage> {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                _onImageButtonPressed(ImageSource.gallery, context: context);
-              },
-              child: Text('Choose Image'),
-            ),
-            showImage(),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: _nameControl,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Name',
-                    hintText: 'Enter name of the product'),
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextFormField(
-                controller: _descriptionControl,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Description',
-                    hintText: 'Enter Description of the product'),
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: _priceControl,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Price',
-                    hintText: 'Enter Price of the product'),
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: _categoryControl,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Category',
-                    hintText: 'Enter Category of the product'),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                Product newproduct = Product(
-                  imageString: product.imageString ?? '',
-                  name: _nameControl.text,
-                  itemNo: 258, //TODO UPDATE ITEM NO LOGIC
-                  description: _descriptionControl.text,
-                  price: int.parse(_priceControl.text),
-                  category: _categoryControl.text,
-                );
-                int statusCode;
-                if (title.toLowerCase() == 'edit product') {
-                  //edit product case
-                  http.Response response = await productCreateOrUpdateRequest(
-                      endPoint +
-                          '/products/update/' +
-                          product.getitemNo().toString(),
-                      newproduct,
-                      patchRequest);
-                  statusCode = response.statusCode;
-                } else {
-                  //create product case
-                  http.Response response = await productCreateOrUpdateRequest(
-                      endPoint + '/products/create', newproduct, postRequest);
-
-                  statusCode = response.statusCode;
-                }
-                if (statusCode == 200) {
-                  ShowSnackBar(context, Text('Successfully saved.'));
-                } else {
-                  ShowSnackBar(context, Text('Network error. Could not save.'));
-                }
-                Navigator.pop(context, newproduct);
-              },
-              child: Text('Save'),
-            ),
-            SizedBox(
-              height: 12,
-            ),
-            if (title.toLowerCase() == 'edit product')
-              OutlinedButton(
-                style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all(Colors.red)),
-                onPressed: () async {
-                  switch (await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DeleteAlertDialog();
-                    },
-                  )) {
-                    case 'Yes':
-                      deleteProduct(product.getitemNo().toString());
-                      break;
-                  }
+      body: LoadingOverlay(
+        isLoading: isLoading,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  _onImageButtonPressed(ImageSource.gallery, context: context);
                 },
-                child: Text('Delete'),
+                child: Text('Choose Image'),
               ),
-            SizedBox(
-              height: 40,
-            ),
-          ],
+              showImage(),
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextField(
+                  controller: _nameControl,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Name',
+                      hintText: 'Enter name of the product'),
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
+                  controller: _descriptionControl,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Description',
+                      hintText: 'Enter Description of the product'),
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: TextField(
+                  controller: _priceControl,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Price',
+                      hintText: 'Enter Price of the product'),
+                ),
+              ),
+              SizedBox(height: 20),
+              DropdownButton(
+                onTap: () {
+                  FocusScope.of(context).unfocus(); // <--- add this
+                },
+                focusNode: FocusNode(),
+                icon: Icon(Icons.keyboard_arrow_down),
+                iconSize: 30,
+                hint: Text('Select Category'),
+                value: dropDownValue,
+                items:
+                    dropDownList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    child: Text(value),
+                    value: value,
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    if (newValue != null) dropDownValue = newValue;
+                  });
+                },
+              ),
+              SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  Product newproduct = Product(
+                    imageString: product.imageString ?? '',
+                    name: _nameControl.text,
+                    itemNo: 258,
+                    description: _descriptionControl.text,
+                    price: int.parse(_priceControl.text),
+                    category: dropDownValue,
+                  );
+                  int statusCode;
+                  if (title.toLowerCase() == 'edit product') {
+                    //edit product case
+                    http.Response response = await productCreateOrUpdateRequest(
+                        endPoint +
+                            '/products/update/' +
+                            product.getitemNo().toString(),
+                        newproduct,
+                        patchRequest);
+                    statusCode = response.statusCode;
+                  } else {
+                    //create product case
+                    http.Response response = await productCreateOrUpdateRequest(
+                        endPoint + '/products/create', newproduct, postRequest);
+
+                    statusCode = response.statusCode;
+                  }
+                  if (statusCode == 200) {
+                    ShowSnackBar(context, Text('Successfully saved.'));
+                  } else {
+                    ShowSnackBar(
+                        context, Text('Network error. Could not save.'));
+                  }
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Navigator.pop(context, [newproduct, false]);
+                },
+                child: Text('Save'),
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              if (title.toLowerCase() == 'edit product')
+                OutlinedButton(
+                  style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(Colors.red)),
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    switch (await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return DeleteAlertDialog();
+                      },
+                    )) {
+                      case 'Yes':
+                        await deleteProduct(product.getitemNo().toString());
+                        Navigator.pop(context, [null, true]);
+                        break;
+                    }
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
+                  child: Text('Delete'),
+                ),
+              SizedBox(
+                height: 40,
+              ),
+            ],
+          ),
         ),
       ),
     );

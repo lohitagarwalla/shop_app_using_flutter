@@ -6,10 +6,14 @@ import 'textItemInfo.dart';
 
 // ignore: must_be_immutable
 class ProductCard extends StatefulWidget {
-  ProductCard({required this.product, this.isEditable = false});
+  ProductCard(
+      {required this.product,
+      this.isEditable = false,
+      required this.onDeleted});
 
   bool isEditable;
   Product product;
+  Function onDeleted;
 
   @override
   _ProductCardState createState() => _ProductCardState();
@@ -67,10 +71,17 @@ class _ProductCardState extends State<ProductCard> {
                                       product: widget.product,
                                       title: 'Edit Product',
                                     )));
-                        setState(() {
-                          if (returnProduct != null)
-                            widget.product = returnProduct;
-                        });
+
+                        if (returnProduct == null) {
+                          //do nothing
+                        } else if (returnProduct[0] != null) {
+                          setState(() {
+                            widget.product = returnProduct[0];
+                          });
+                        } else if (returnProduct[1] == true) {
+                          // this product is deleted. refresh page
+                          widget.onDeleted();
+                        }
                       },
                       child: Text('Edit'),
                     ),

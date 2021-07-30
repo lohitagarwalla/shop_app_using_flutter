@@ -12,25 +12,30 @@ import 'login_page.dart';
 import 'add_product.dart';
 import 'package:http/http.dart' as http;
 import '../components/constants.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 
 const getProduct = endPoint + '/products/get';
 
 List<Product> products = [];
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key, this.getUrl}) : super(key: key);
+
+  final String? getUrl;
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(getUrl: getUrl);
 }
 
 class _HomePageState extends State<HomePage> {
   final List<String> kWords;
   var isLogged = false;
   SearchAppBarDelegate _searchDelegate = SearchAppBarDelegate([], []);
+  bool isLoading = false;
+  String? getUrl;
 
   //Initializing with sorted list of english words
-  _HomePageState()
+  _HomePageState({this.getUrl})
       : kWords = [
           'hello',
           'dear',
@@ -50,7 +55,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _searchDelegate = SearchAppBarDelegate(kWords, []);
-    updateProductsArray(getProduct);
+    updateProductsArray(getUrl ?? getProduct);
     updateIsLogged();
   }
 
@@ -68,6 +73,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateProductsArray(String url) async {
+    setState(() {
+      isLoading = true;
+    });
     if (url == '') return;
     var returnValue = await getRequest(url);
     List productsarr = [];
@@ -86,6 +94,10 @@ class _HomePageState extends State<HomePage> {
         products = productsarr as List<Product>;
       });
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   List<Product> parseProduct(String responseBody) {
@@ -99,15 +111,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       drawer: DrawerWidget(context: context, title: 'My App'),
       appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(Icons.account_circle),
-            SizedBox(
-              width: 10,
-            ),
-            Text('my_app'),
-          ],
-        ),
+        title: Text('Vertex'),
         actions: <Widget>[
           if (isLogged)
             IconButton(
@@ -115,13 +119,14 @@ class _HomePageState extends State<HomePage> {
                 var returnProduct = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddProductPage(
-                      product: Product(), title: 'Add Product',
-                      // category: 'New Category',
-                    ),
+                    builder: (context) =>
+                        AddProductPage(product: Product(), title: 'Add Product'
+                            // category: 'New Category',
+                            ),
                   ),
                 );
-                products.insert(0, returnProduct);
+                if (returnProduct == null) return;
+                products.insert(0, returnProduct[0]);
                 setState(() {
                   products;
                 });
@@ -181,28 +186,34 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
-              itemCount: products.length + 1,
-              itemBuilder: (BuildContext cntxt, int index) {
-                return index == products.length
-                    ? BottomButton()
-                    : ProductCard(
-                        product: products[index],
-                        isEditable: isLogged,
-                      );
-              },
-              separatorBuilder: (BuildContext cntxt, int index) {
-                return SizedBox(
-                  height: 1,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+      body: LoadingOverlay(
+          color: Colors.blue,
+          isLoading: isLoading,
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.separated(
+                  itemCount: products.length + 1,
+                  itemBuilder: (BuildContext cntxt, int index) {
+                    return index == products.length
+                        ? BottomButton()
+                        : ProductCard(
+                            product: products[index],
+                            isEditable: isLogged,
+                            onDeleted: () {
+                              updateProductsArray(getProduct);
+                            },
+                          );
+                  },
+                  separatorBuilder: (BuildContext cntxt, int index) {
+                    return SizedBox(
+                      height: 1,
+                    );
+                  },
+                ),
+              ),
+            ],
+          )),
     );
   }
 }

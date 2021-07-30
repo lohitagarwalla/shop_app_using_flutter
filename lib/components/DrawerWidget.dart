@@ -66,8 +66,7 @@ class DrawerWidget extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => ShowCategory(category: hello1)),
+          MaterialPageRoute(builder: (context) => ShowCategory()),
         );
       },
     ));
