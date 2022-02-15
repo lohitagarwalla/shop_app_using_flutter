@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ghs_app/components/network.dart';
-import 'package:ghs_app/screens/profile_page.dart';
-import 'package:ghs_app/utility-folder/shared-preferences-storage.dart';
 import '../components/drawerWidget.dart';
 import '../components/productCard.dart';
 import '../classes/product.dart';
 import '../components/bottomButton.dart';
 import '../classes/mySearch.dart';
-import 'login_page.dart';
-import 'add_product.dart';
+// import 'add_product.dart';
 import 'package:http/http.dart' as http;
 import '../components/constants.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -29,10 +26,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<String> kWords;
-  var isLogged = false;
+  // var isLogged = false;
   SearchAppBarDelegate _searchDelegate = SearchAppBarDelegate([], []);
   bool isLoading = false;
   String? getUrl;
+  int skip = 0;
+
+  void showMore(String url) async {
+    skip += 10;
+    var returnValue = await getRequest(url + '?skip=' + skip.toString());
+    List productsarr = [];
+    if (returnValue == null) {
+      // TODO handle in return is null
+    } else {
+      http.Response response = returnValue;
+      productsarr = parseProduct(response.body);
+
+      setState(() {
+        products.addAll(productsarr as List<Product>);
+      });
+    }
+  }
 
   //Initializing with sorted list of english words
   _HomePageState({this.getUrl})
@@ -56,21 +70,21 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _searchDelegate = SearchAppBarDelegate(kWords, []);
     updateProductsArray(getUrl ?? getProduct);
-    updateIsLogged();
+    // updateIsLogged();
   }
 
-  updateIsLogged() async {
-    var token = await getToken();
-    if (token == no_token_found) {
-      setState(() {
-        isLogged = false;
-      });
-    } else {
-      setState(() {
-        isLogged = true;
-      });
-    }
-  }
+  // updateIsLogged() async {
+  //   var token = await getToken();
+  //   if (token == no_token_found) {
+  //     setState(() {
+  //       isLogged = false;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       isLogged = true;
+  //     });
+  //   }
+  // }
 
   void updateProductsArray(String url) async {
     setState(() {
@@ -101,6 +115,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Product> parseProduct(String responseBody) {
+    print("responseBody");
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
 
     return parsed.map<Product>((json) => Product.fromJson(json)).toList();
@@ -109,30 +124,33 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerWidget(context: context, title: 'My App'),
+      drawer: DrawerWidget(
+        context: context,
+        title: 'My App',
+      ),
       appBar: AppBar(
         title: Text('Vertex'),
         actions: <Widget>[
-          if (isLogged)
-            IconButton(
-              onPressed: () async {
-                var returnProduct = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        AddProductPage(product: Product(), title: 'Add Product'
-                            // category: 'New Category',
-                            ),
-                  ),
-                );
-                if (returnProduct == null) return;
-                products.insert(0, returnProduct[0]);
-                setState(() {
-                  products;
-                });
-              },
-              icon: Icon(Icons.add),
-            ),
+          // if (isLogged)
+          //   IconButton(
+          //     onPressed: () async {
+          //       var returnProduct = await Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) =>
+          //               AddProductPage(product: Product(), title: 'Add Product'
+          //                   // category: 'New Category',
+          //                   ),
+          //         ),
+          //       );
+          //       if (returnProduct == null) return;
+          //       products.insert(0, returnProduct[0]);
+          //       setState(() {
+          //         products;
+          //       });
+          //     },
+          //     icon: Icon(Icons.add),
+          //   ),
           IconButton(
             onPressed: () async {
               var searchquery =
@@ -148,39 +166,38 @@ class _HomePageState extends State<HomePage> {
               size: 30,
             ),
           ),
-          IconButton(
-            onPressed: () async {
-              String token = await getToken();
-              if (token == no_token_found) {
-                var result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginScreen(
-                            title: 'User Login', isLogged: isLogged)));
-                if (result) {
-                  setState(() {
-                    isLogged = true;
-                  });
-                }
-                print(result);
-              } else {
-                var value = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ProfileScreen(title: 'User Profile')));
-                if (value != null) {
-                  setState(() {
-                    isLogged = false;
-                  });
-                }
-              }
-            },
-            icon: Icon(
-              Icons.person,
-              size: 30,
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () async {
+          //     String token = await getToken();
+          //     if (token == no_token_found) {
+          //       var result = await Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) => LoginScreen(
+          //                   title: 'User Login', isLogged: isLogged)));
+          //       if (result == true) {
+          //         setState(() {
+          //           isLogged = true;
+          //         });
+          //       }
+          //     } else {
+          //       var value = await Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) =>
+          //                   ProfileScreen(title: 'User Profile')));
+          //       if (value != null) {
+          //         setState(() {
+          //           isLogged = false;
+          //         });
+          //       }
+          //     }
+          //   },
+          //   icon: Icon(
+          //     Icons.person,
+          //     size: 30,
+          //   ),
+          // ),
           SizedBox(
             width: 15,
           )
@@ -196,10 +213,10 @@ class _HomePageState extends State<HomePage> {
                   itemCount: products.length + 1,
                   itemBuilder: (BuildContext cntxt, int index) {
                     return index == products.length
-                        ? BottomButton()
+                        ? BottomButton(callShowMore: showMore)
                         : ProductCard(
                             product: products[index],
-                            isEditable: isLogged,
+                            // isEditable: isLogged,
                             onDeleted: () {
                               updateProductsArray(getProduct);
                             },
@@ -207,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                   },
                   separatorBuilder: (BuildContext cntxt, int index) {
                     return SizedBox(
-                      height: 1,
+                      height: 40,
                     );
                   },
                 ),

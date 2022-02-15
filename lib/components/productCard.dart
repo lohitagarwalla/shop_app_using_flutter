@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:ghs_app/classes/product.dart';
 import 'package:ghs_app/utility-folder/utility.dart';
-import 'package:ghs_app/screens/add_product.dart';
+// import 'package:ghs_app/screens/add_product.dart';
 import 'textItemInfo.dart';
 
 // ignore: must_be_immutable
 class ProductCard extends StatefulWidget {
   ProductCard(
       {required this.product,
-      this.isEditable = false,
+      // this.isEditable = false,
       required this.onDeleted});
 
-  bool isEditable;
+  // bool isEditable;
   Product product;
   Function onDeleted;
 
@@ -61,30 +61,30 @@ class _ProductCardState extends State<ProductCard> {
                     property: 'Category',
                     value: widget.product.getCategory(),
                   ),
-                  if (widget.isEditable)
-                    ElevatedButton(
-                      onPressed: () async {
-                        var returnProduct = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddProductPage(
-                                      product: widget.product,
-                                      title: 'Edit Product',
-                                    )));
+                  // if (widget.isEditable)
+                  //   ElevatedButton(
+                  //     onPressed: () async {
+                  //       var returnProduct = await Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //               builder: (context) => AddProductPage(
+                  //                     product: widget.product,
+                  //                     title: 'Edit Product',
+                  //                   )));
 
-                        if (returnProduct == null) {
-                          //do nothing
-                        } else if (returnProduct[0] != null) {
-                          setState(() {
-                            widget.product = returnProduct[0];
-                          });
-                        } else if (returnProduct[1] == true) {
-                          // this product is deleted. refresh page
-                          widget.onDeleted();
-                        }
-                      },
-                      child: Text('Edit'),
-                    ),
+                  //       if (returnProduct == null) {
+                  //         //do nothing
+                  //       } else if (returnProduct[0] != null) {
+                  //         setState(() {
+                  //           widget.product = returnProduct[0];
+                  //         });
+                  //       } else if (returnProduct[1] == true) {
+                  //         // this product is deleted. refresh page
+                  //         widget.onDeleted();
+                  //       }
+                  //     },
+                  //     child: Text('Edit'),
+                  //   ),
                 ],
               ),
             ),

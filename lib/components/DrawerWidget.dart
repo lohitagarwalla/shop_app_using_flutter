@@ -1,27 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ghs_app/classes/category.dart';
-import 'package:ghs_app/screens/showCategory.dart';
-
-Category hello1 = Category(name: 'hello1', subCategories: []);
-Category hello2 = Category(name: 'hello2', subCategories: []);
-Category hello3 = Category(name: 'hello3', subCategories: []);
-
-void initializeCategory() {
-  hello1.subCategories!.add(hello2);
-  hello1.subCategories!.add(hello3);
-  hello1.subCategories!.add(hello2);
-  hello1.subCategories!.add(hello3);
-  hello1.subCategories!.add(hello2);
-  hello1.subCategories!.add(hello3);
-}
 
 class DrawerWidget extends StatelessWidget {
-  final String name = 'Lohit Agarwalla';
-  final String email = 'lohitagarwalla@gmail.com';
   final String title;
   final BuildContext context;
 
-  const DrawerWidget({Key? key, required this.context, required this.title})
+  DrawerWidget({Key? key, required this.context, required this.title})
       : super(key: key);
 
   @override
@@ -59,15 +42,18 @@ class DrawerWidget extends StatelessWidget {
   }
 
   List<Widget> options() {
-    initializeCategory();
     List<Widget> children = [];
     children.add(ListTile(
-      title: Text('Shop by Category'),
+      title: Text('Category 1'),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ShowCategory()),
-        );
+        //TODO Add functionality for selecting category
+      },
+    ));
+
+    children.add(ListTile(
+      title: Text('Category 2'),
+      onTap: () {
+        //TODO Add functionality for selecting category
       },
     ));
     return children;
@@ -75,7 +61,40 @@ class DrawerWidget extends StatelessWidget {
 
   List<Widget> settings() {
     List<Widget> children = [];
-    children.add(ListTile(title: Text('Seller Account')));
+    children.add(
+      ListTile(
+        onTap: () {
+          //TODO Update login information as bellow for user
+        },
+        // async {
+        //   String token = await getToken();
+        //   if (token == no_token_found) {
+        //     var result = await Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //             builder: (context) =>
+        //                 LoginScreen(title: 'Seller Login', isLogged: false)));
+        //     print('result ' + result.toString());
+        //     if (result == true) {
+        //       updateIsSellerLogged(true);
+        //       Navigator.pop(context);
+        //     }
+        //   } else {
+        //     var value = await Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //             builder: (context) =>
+        //                 ProfileScreen(title: 'Seller Profile')));
+        //     if (value == false) {
+        //       //seller logged out
+        //       updateIsSellerLogged(false);
+        //       Navigator.pop(context);
+        //     }
+        //   }
+        // },
+        title: Text('User Account'),
+      ),
+    );
     children.add(ListTile(title: Text('Settings')));
     return children;
   }
