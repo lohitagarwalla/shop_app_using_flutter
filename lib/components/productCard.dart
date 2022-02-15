@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ghs_app/classes/product.dart';
+import 'package:ghs_app/screens/home_page.dart';
+import 'package:ghs_app/screens/item_details.dart';
 import 'package:ghs_app/utility-folder/utility.dart';
 // import 'package:ghs_app/screens/add_product.dart';
 import 'textItemInfo.dart';
@@ -22,74 +24,47 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      padding: EdgeInsets.all(10),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Expanded(
-            flex: 3,
-            child: convertStringtoImage(widget.product.getimageString()),
-          ),
-          Expanded(
-            flex: 6,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ItemDetails(product: widget.product),
+            ));
+      },
+      child: Card(
+        elevation: 15,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            children: [
+              Hero(
+                tag: widget.product.getitemNo().toString(),
+                child: convertStringtoImage(widget.product.getimageString()),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                child: Text(
+                  widget.product.getname(),
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Price  "),
                   Text(
-                    widget.product.getname(),
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                  ),
-                  ItemInfoText(
-                    property: 'Item No',
-                    value: widget.product.getitemNo().toString(),
-                  ),
-                  ItemInfoText(
-                    property: 'Description',
-                    value: widget.product.getdescription(),
-                  ),
-                  ItemInfoText(
-                    property: 'Price',
-                    value: widget.product.getprice().toString(),
-                  ),
-                  ItemInfoText(
-                    property: 'Category',
-                    value: widget.product.getCategory(),
-                  ),
-                  // if (widget.isEditable)
-                  //   ElevatedButton(
-                  //     onPressed: () async {
-                  //       var returnProduct = await Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //               builder: (context) => AddProductPage(
-                  //                     product: widget.product,
-                  //                     title: 'Edit Product',
-                  //                   )));
-
-                  //       if (returnProduct == null) {
-                  //         //do nothing
-                  //       } else if (returnProduct[0] != null) {
-                  //         setState(() {
-                  //           widget.product = returnProduct[0];
-                  //         });
-                  //       } else if (returnProduct[1] == true) {
-                  //         // this product is deleted. refresh page
-                  //         widget.onDeleted();
-                  //       }
-                  //     },
-                  //     child: Text('Edit'),
-                  //   ),
+                    widget.product.getprice().toString(),
+                  )
                 ],
               ),
-            ),
+              SizedBox(height: 20)
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

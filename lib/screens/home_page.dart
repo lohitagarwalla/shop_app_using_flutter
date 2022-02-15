@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                   },
                   separatorBuilder: (BuildContext cntxt, int index) {
                     return SizedBox(
-                      height: 40,
+                      height: 150,
                     );
                   },
                 ),

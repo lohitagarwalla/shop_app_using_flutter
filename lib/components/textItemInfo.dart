@@ -12,17 +12,20 @@ class ItemInfoText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        children: <TextSpan>[
-          TextSpan(
-              text: property + ': ',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          TextSpan(text: value, style: TextStyle()),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Text.rich(
+        TextSpan(
+          children: <TextSpan>[
+            TextSpan(
+                text: property + ': ',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: value, style: TextStyle()),
+          ],
+        ),
+        maxLines: 5,
+        overflow: TextOverflow.ellipsis,
       ),
-      maxLines: 5,
-      overflow: TextOverflow.ellipsis,
     );
   }
 }
