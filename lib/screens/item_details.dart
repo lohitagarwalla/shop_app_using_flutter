@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ghs_app/classes/product.dart';
 import 'package:ghs_app/components/textItemInfo.dart';
+import 'package:ghs_app/screens/address_page.dart';
 import 'package:ghs_app/utility-folder/utility.dart';
 
 class ItemDetails extends StatefulWidget {
-  ItemDetails({required Product this.product});
+  ItemDetails({required this.product, required this.title});
 
   final Product product;
+  final String title;
 
   @override
   _ItemDetailsState createState() => _ItemDetailsState();
@@ -16,6 +18,9 @@ class _ItemDetailsState extends State<ItemDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
       body: SingleChildScrollView(
         child: Card(
           child: Padding(
@@ -45,8 +50,15 @@ class _ItemDetailsState extends State<ItemDetails> {
                   value: widget.product.getCategory(),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
-                  child: Text("Buy"),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddAddress(
+                                  title: 'Add Address',
+                                )));
+                  },
+                  child: Text("Proceed"),
                 ),
               ],
             ),
