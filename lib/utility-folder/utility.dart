@@ -21,7 +21,10 @@ Widget convertStringtoImage(String imageString) {
   Uint8List imageBytes = convertStringtoByteList(imageString);
   return imageString.length == 0
       ? Center(child: Text('No image to show'))
-      : Image.memory(imageBytes);
+      : Image.memory(
+          imageBytes,
+          height: 400,
+        );
 }
 
 ShowSnackBar(dynamic cxt, Widget child) {

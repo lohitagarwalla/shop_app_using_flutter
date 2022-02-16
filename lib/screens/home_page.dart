@@ -12,6 +12,7 @@ import '../components/constants.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 const getProduct = endPoint + '/products/get';
+const appTitle = 'Alls Good';
 
 List<Product> products = [];
 
@@ -50,19 +51,7 @@ class _HomePageState extends State<HomePage> {
 
   //Initializing with sorted list of english words
   _HomePageState({this.getUrl})
-      : kWords = [
-          'hello',
-          'dear',
-          'friend',
-          'how',
-          'are',
-          'you',
-          'lets',
-          'meet',
-          'soon'
-        ]..sort(
-            (w1, w2) => w1.toLowerCase().compareTo(w2.toLowerCase()),
-          ),
+      : kWords = [],
         super();
 
   @override
@@ -124,33 +113,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerWidget(
-        context: context,
-        title: 'My App',
-      ),
+      drawer: DrawerWidget(context: context, title: appTitle),
       appBar: AppBar(
-        title: Text('Vertex'),
+        title: Text(appTitle),
         actions: <Widget>[
-          // if (isLogged)
-          //   IconButton(
-          //     onPressed: () async {
-          //       var returnProduct = await Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) =>
-          //               AddProductPage(product: Product(), title: 'Add Product'
-          //                   // category: 'New Category',
-          //                   ),
-          //         ),
-          //       );
-          //       if (returnProduct == null) return;
-          //       products.insert(0, returnProduct[0]);
-          //       setState(() {
-          //         products;
-          //       });
-          //     },
-          //     icon: Icon(Icons.add),
-          //   ),
           IconButton(
             onPressed: () async {
               var searchquery =
@@ -161,75 +127,24 @@ class _HomePageState extends State<HomePage> {
                 updateProductsArray(searchUrl);
               }
             },
-            icon: Icon(
-              Icons.search,
-              size: 30,
-            ),
+            icon: Icon(Icons.search, size: 30),
           ),
-          // IconButton(
-          //   onPressed: () async {
-          //     String token = await getToken();
-          //     if (token == no_token_found) {
-          //       var result = await Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //               builder: (context) => LoginScreen(
-          //                   title: 'User Login', isLogged: isLogged)));
-          //       if (result == true) {
-          //         setState(() {
-          //           isLogged = true;
-          //         });
-          //       }
-          //     } else {
-          //       var value = await Navigator.push(
-          //           context,
-          //           MaterialPageRoute(
-          //               builder: (context) =>
-          //                   ProfileScreen(title: 'User Profile')));
-          //       if (value != null) {
-          //         setState(() {
-          //           isLogged = false;
-          //         });
-          //       }
-          //     }
-          //   },
-          //   icon: Icon(
-          //     Icons.person,
-          //     size: 30,
-          //   ),
-          // ),
-          SizedBox(
-            width: 15,
-          )
+          SizedBox(width: 15)
         ],
       ),
       body: LoadingOverlay(
           color: Colors.blue,
           isLoading: isLoading,
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView.separated(
-                  itemCount: products.length + 1,
-                  itemBuilder: (BuildContext cntxt, int index) {
-                    return index == products.length
-                        ? BottomButton(callShowMore: showMore)
-                        : ProductCard(
-                            product: products[index],
-                            // isEditable: isLogged,
-                            onDeleted: () {
-                              updateProductsArray(getProduct);
-                            },
-                          );
-                  },
-                  separatorBuilder: (BuildContext cntxt, int index) {
-                    return SizedBox(
-                      height: 150,
-                    );
-                  },
-                ),
-              ),
-            ],
+          child: ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ProductCard(
+                product: products[index],
+                onDeleted: () {
+                  updateProductsArray(getProduct);
+                },
+              );
+            },
           )),
     );
   }

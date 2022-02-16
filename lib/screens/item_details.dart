@@ -23,10 +23,7 @@ class _ItemDetailsState extends State<ItemDetails> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Hero(
-                  tag: widget.product.getitemNo().toString(),
-                  child: convertStringtoImage(widget.product.getimageString()),
-                ),
+                convertStringtoImage(widget.product.getimageString()),
                 Text(
                   widget.product.getname(),
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
