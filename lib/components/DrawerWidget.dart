@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ghs_app/classes/user.dart';
+import 'package:ghs_app/screens/login_page.dart';
+import 'package:ghs_app/screens/profile_page.dart';
 
 class DrawerWidget extends StatelessWidget {
   final String title;
@@ -63,37 +66,54 @@ class DrawerWidget extends StatelessWidget {
     List<Widget> children = [];
     children.add(
       ListTile(
-        onTap: () {
-          //TODO Update login information as bellow for user
-        },
-        // async {
-        //   String token = await getToken();
-        //   if (token == no_token_found) {
-        //     var result = await Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //             builder: (context) =>
-        //                 LoginScreen(title: 'Seller Login', isLogged: false)));
-        //     print('result ' + result.toString());
-        //     if (result == true) {
-        //       updateIsSellerLogged(true);
-        //       Navigator.pop(context);
-        //     }
-        //   } else {
-        //     var value = await Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //             builder: (context) =>
-        //                 ProfileScreen(title: 'Seller Profile')));
-        //     if (value == false) {
-        //       //seller logged out
-        //       updateIsSellerLogged(false);
-        //       Navigator.pop(context);
-        //     }
-        //   }
-        // },
-        title: Text('User Account'),
-      ),
+          onTap: () async {
+            if (User.email != '') {
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ProfileScreen(title: 'User Account')));
+            } else {
+              var result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          LoginScreen(title: 'User Login', isLogged: false)));
+              print('result ' + result.toString());
+              if (result == true) {
+                // updateIsSellerLogged(true);
+                Navigator.pop(context);
+              }
+            }
+          },
+          title: Text('User Account')
+          // async {
+          //   String token = await getToken();
+          //   if (token == no_token_found) {
+          //     var result = await Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) =>
+          //                 LoginScreen(title: 'Seller Login', isLogged: false)));
+          //     print('result ' + result.toString());
+          //     if (result == true) {
+          //       updateIsSellerLogged(true);
+          //       Navigator.pop(context);
+          //     }
+          //   } else {
+          //     var value = await Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) =>
+          //                 ProfileScreen(title: 'Seller Profile')));
+          //     if (value == false) {
+          //       //seller logged out
+          //       updateIsSellerLogged(false);
+          //       Navigator.pop(context);
+          //     }
+          //   }
+          // },
+          ),
     );
     children.add(ListTile(title: Text('Settings')));
     return children;

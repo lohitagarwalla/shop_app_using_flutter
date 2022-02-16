@@ -1,20 +1,20 @@
 class User {
-  String? name;
-  String? email;
-  String? pass;
+  static String name = '';
+  static String email = '';
+  static String pass = '';
 
-  User({this.name = '', this.email = '', this.pass = ''});
+  User({name, email, pass});
 
   String getname() {
-    return name ?? '';
+    return name;
   }
 
   String getemail() {
-    return email ?? '';
+    return email;
   }
 
   String getPass() {
-    return pass ?? '';
+    return pass;
   }
 
   factory User.fromJson(Map<String, String> json) {

@@ -17,11 +17,11 @@ Future<http.Response> productCreateOrUpdateRequest(
   return func(url, body); //func can be patchRequest of postRequest
 }
 
-Future<http.Response> userCreateOrLoginRequest(String url, User user) {
+Future<http.Response> userCreateOrLoginRequest(String url) {
   var body = jsonEncode(<String, dynamic>{
-    "name": user.getname(),
-    "email": user.getemail(),
-    "pass": user.getPass()
+    "name": User.name,
+    "email": User.email,
+    "pass": User.pass
   });
   return postRequest(url, body);
 }
